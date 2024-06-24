@@ -16,34 +16,65 @@ A ray tracing renderer to create 3D environments with different geometries and m
 - Started by rendering a background that blends blue and white using the Y coordinate of the ray through Linear Interpolation
 - Created a sphere by checking if rays were hitting the volume occupied by it based on its center and radius
 - Colored the sphere based on the normal vector from its center to the point of intersection (Surface Normal). Also added another, larger sphere below to act as ground
+  
 ![Initial render](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/initialRender.png)
+
 - Implemented Anti-Aliasing by sampling the square region around the pixel
+
 ![Anti-Aliasing](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/antialiasing.png)
+
 - Created a simple diffuse material and applied it to both the sphere so rays bounce off of geometries in random direction. Currently, 50% of the color is absorbed by the spheres at each bounce, making them appear gray.
+  
 ![Simple diffuse](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/gray.png)
+
 - Limit the number of times rays bounce off of objects to save computation. Not much difference in quality of render
+  
 ![Limited bounce](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/grayWithReflectionLimit.png)
+
 - Some intersections had floating point rounding errors which would cause origin of bouncing ray to be slightly off. Added a slight increment to make sure it doesnt hit the same surface again causing self-shadowing or Shadow Acne. I believe this is called Shadow Biasing using Normal Offset to be specific but I may be wrong.
+  
 ![Shadow acne](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/fixShadowAcne.png)
+
 - Changed the simple diffuse material to follow the Lambertain distribution. While the simpler model scattered the ray in random direction, this is more likely to reflect ray in a direction nea the surface normal. It seems to look more realistic as the shadow is better and the spheres have a slight blue tint from the sky.
+  
 ![Lambertian spheres](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/lambertianDistance.png)
+
 - Images with data that are written without being transformed are said to be in linear space, whereas images that are transformed are said to be in gamma space. The image viewer might be expecting "hamma corrected" images as the image is way too dark eventhough only 50% of the color was absorbed at each bounce. Used "gamma 2" to go from linear to gamma space by taking square root of RGB values.
+  
 ![Gamma correction](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/gammaCorrection.png)
+
 - Created a new material to look like metal. Using the ray vector and the surface normal, created a new direction vector to reflect off of the surface rather than scatter randomly.
+  
 ![Metal material](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/metalAndLambertianWorld.png)
+
 - Added a feature to make reflection a bit fuzzy by creating a small sphere around the original end point and offsetting to a random point on the surface of the sphere. Bigger sphere, fuzzier reflection.
+  
 ![Fuzzy reflection](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/fuzzyReflection.png)
-- Introduced dielectric material to create clear spheres by randomly either reflecting or refracting ray per interaction. Refracted ray bends based on material's refractive index. When transparent material embedded inside another, we calculate relative refraction index: the refractive index of the object's material divided by the refractive index of the surrounding material. Used the Snell's Law (η⋅sinθ=η′⋅sinθ′) for ray refraction using the refractive indices and angles from surface normal. 
+
+- Introduced dielectric material to create clear spheres by randomly either reflecting or refracting ray per interaction. Refracted ray bends based on material's refractive index. When transparent material embedded inside another, we calculate relative refraction index: the refractive index of the object's material divided by the refractive index of the surrounding material. Used the Snell's Law (η⋅sinθ=η′⋅sinθ′) for ray refraction using the refractive indices and angles from surface normal.
+  
 ![Initial refraction](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/initialRefraction.png)
+
 - When a ray enters a geometry of lower index of refraction at a sufficiently glancing angle, it can refract with an angle greater than 90. In a situation like this (1.5/1.0⋅sinθ>1.0), a solution doesnt exist and we must reflect. Here all the light is reflected, and because in practice that is usually inside solid objects, it is called total internal reflection. A sphere of material with an index of refraction greater than air, there's no incident angle that will yield total internal reflection. So, we create a sphere with refractive index of air divided by refractive index of water to create an air bubble and experience total internal reflection.
+  
 ![Air bubble](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/airBubbleInWater.png)
+
 - Glass reflectivity varies with angle and basically becomes a mirror at a steep angle. There is Schlick Approximation by Christophe Schlick to check just that. If that yields true at a certain angle, we reflect. Now we can create a hollow glass sphere by creating a glass sphere with refractive index 1.50 and an inner sphere with refractive index 1.0/1.5 (air surrounded by glass).
+  
 ![Hollow glass](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/hollowGlassSphere.png)
+
 - Made vertical field of view adjustable by taking in the vertical view angle from edge to edge of viewport and adjusting viewport height accordingly.
+  
 ![Vertical FOV](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/90vfov.png)
+
 - Introduced ability to position and rotate the camera by picking a point to look from, point to look to and camera-relative "up" direction. W can be look direction unit vector. Cross product of W and "up" vector can give us U, which will be unit vector pointing to camera right. Then we cross product W and U to get V which will be the unit vector pointing to camera up. This gives us complete orthonormal basis to describe camera orientation. We can now use this to configure our viewport.
+  
 ![Distant view](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/distantView.png)
+
 - Latest feature, added Defocus Blur which is also known as Depth of Field. Its when objects at a certain distance appear sharp and everything closer or further is blur. This can be refered to as focus distance. The aperture of a camera lens is an opening that controls the amount of light entering the camera. A larger aperture (small f-number) allows more light and results in a shallower depth of field, meaning fewer objects appear in focus. When the aperture is open (not a pinhole), rays of light coming from a point source on the focal plane converge correctly at the sensor. For points not on the focal plane, rays do not converge correctly, causing blur. To simulate this, we will create a lens of a certain radius. Larger radius means greater defocus blur. We could just take the radius of the disk as a camera parameter, but the blur would vary depending on the projection distance. A slightly easier parameter is to specify the angle of the cone with apex at viewport center and base (defocus disk) at the camera center. Now, rather than originating rays from center of camera, we will randomly generate them from anywhere within the disk. If an object is at the focus distance, the multiple rays traced through different points on the lens aperture will all intersect the object's surface at the same point, resulting in a sharp image. Objects not on the focal plane will intersect these rays at different points, causing a blur.
+  
 ![Defocus blur](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/defocusBlur.png)
+
 - Using all the current features, here is a final render displaying the capability and beauty of the ray tracer.
+  
 ![Final render](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/finalRender.png)
