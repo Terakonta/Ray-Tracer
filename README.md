@@ -13,8 +13,14 @@ A ray tracing renderer to create 3D environments with different geometries and m
 - Run the executable and redirect it to a PPM file (example: .\main > image.ppm)
 
 ## Progress
-- Started by rendering a background that blends blue and white using the Y coordinate of the ray through Linear Interpolation
-- Created a sphere by checking if rays were hitting the volume occupied by it based on its center and radius
+- Started by understanding the format of a PPM file and creating a sample image
+- Created a vector class with the necessary math
+- Created a color class to write colors in PPM format
+- Created a ray class to manage rays
+- Created image with certain dimensions and aspect ratio. Made a viewport with proportional dimensions so it may contain a grid of pixels for the image.
+- Placed camera at origin (0,0,0) and viewport at (0,0,-1), so the focal length is 1.
+- Rendering a background image that blends blue and white using the Y coordinate of the ray through Linear Interpolation when it passes through the viewport pixel.
+- Created a sphere by checking if rays were hitting the volume occupied by it based on its center and radius, and updated the viewport pixel the ray passes through accordinly.
 - Colored the sphere based on the normal vector from its center to the point of intersection (Surface Normal). Also added another, larger sphere below to act as ground
   
 ![Initial render](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/initialRender.png)
