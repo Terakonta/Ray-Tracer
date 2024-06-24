@@ -29,4 +29,9 @@ A ray tracing renderer to create 3D environments with different geometries and m
 ![Lambertian spheres](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/lambertianDistance.png)
 - Images with data that are written without being transformed are said to be in linear space, whereas images that are transformed are said to be in gamma space. The image viewer might be expecting "hamma corrected" images as the image is way too dark eventhough only 50% of the color was absorbed at each bounce. Used "gamma 2" to go from linear to gamma space by taking square root of RGB values.
 ![Gamma correction](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/gammaCorrection.png)
-
+- Created a new material to look like metal. Using the ray vector and the surface normal, created a new direction vector to reflect off of the surface rather than scatter randomly.
+![Metal material](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/metalAndLambertianWorld.png)
+- Added a feature to make reflection a bit fuzzy by creating a small sphere around the original end point and offsetting to a random point on the surface of the sphere. Bigger sphere, fuzzier reflection.
+![Fuzzy reflection](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/fuzzyReflection.png)
+- Introduced dielectric material to create clear spheres by randomly either reflecting or refracting ray per interaction. Refracted ray bends based on material's refractive index. When transparent material embedded inside another, we calculate relative refraction index: the refractive index of the object's material divided by the refractive index of the surrounding material. Used the Snell's Law for ray refraction using the refractive indices and angles from surface normal.
+![Initial refraction](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/initialRefraction.png)
