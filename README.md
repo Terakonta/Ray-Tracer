@@ -15,5 +15,12 @@ A ray tracing renderer to create 3D environments with different geometries and m
 ## Progress
 - Started by rendering a background that blends blue and white using the Y coordinate of the ray through Linear Interpolation
 - Created a sphere by checking if rays were hitting the volume occupied by it based on its center and radius
-- Colored the sphere based on the normal vector from its center to the point of intersection (Surface Normal)
-![alt text](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/initialRender.png)
+- Colored the sphere based on the normal vector from its center to the point of intersection (Surface Normal). Also added another, larger sphere below to act as ground
+![Initial render](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/initialRender.png)
+- Implemented Anti-Aliasing by sampling the square region around the pixel
+![Anti-Aliasing](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/antialiasing.png)
+- Created a simple diffuse material and applied it to both the sphere so rays bounce off of geometries in random direction
+![Simple diffuse](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/gray.png)
+- Limit the number of times rays bounce off of objects to save computation. Not much difference in quality of render
+![Limited bounce](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/grayWithReflectionLimit.png)
+
