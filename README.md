@@ -19,8 +19,14 @@ A ray tracing renderer to create 3D environments with different geometries and m
 ![Initial render](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/initialRender.png)
 - Implemented Anti-Aliasing by sampling the square region around the pixel
 ![Anti-Aliasing](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/antialiasing.png)
-- Created a simple diffuse material and applied it to both the sphere so rays bounce off of geometries in random direction
+- Created a simple diffuse material and applied it to both the sphere so rays bounce off of geometries in random direction. Currently, 50% of the color is absorbed by the spheres at each bounce, making them appear gray.
 ![Simple diffuse](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/gray.png)
 - Limit the number of times rays bounce off of objects to save computation. Not much difference in quality of render
 ![Limited bounce](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/grayWithReflectionLimit.png)
+- Some intersections had floating point rounding errors which would cause origin of bouncing ray to be slightly off. Added a slight increment to make sure it doesnt hit the same surface again causing self-shadowing or Shadow Acne. I believe this is called Shadow Biasing using Normal Offset to be specific but I may be wrong.
+![Shadow acne](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/fixShadowAcne.png)
+- Changed the simple diffuse material to follow the Lambertain distribution. While the simpler model scattered the ray in random direction, this is more likely to reflect ray in a direction nea the surface normal. It seems to look more realistic as the shadow is better and the spheres have a slight blue tint from the sky.
+![Lambertian spheres](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/lambertianDistance.png)
+- Images with data that are written without being transformed are said to be in linear space, whereas images that are transformed are said to be in gamma space. The image viewer might be expecting "hamma corrected" images as the image is way too dark eventhough only 50% of the color was absorbed at each bounce. Used "gamma 2" to go from linear to gamma space by taking square root of RGB values.
+![Gamma correction](https://github.com/Terakonta/Ray-Tracer/blob/main/ray%20tracer/png/gammaCorrection.png)
 
